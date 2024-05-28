@@ -1,0 +1,82 @@
+# Use root/example as user/password credentials
+version: '3'
+
+services:
+
+  test-go:
+    container_name: test-go
+    build: ./
+    restart: always
+    environment:
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_SERVICE=test-go
+      - DD_ENV=prod
+      - DD_VERSION=abc123
+      - DBUSER=root
+      - DBPASS=example
+      - DBADDR=my-db-service:3306
+    labels:
+      - com.datadoghq.tags.service=test-go
+      - com.datadoghq.tags.env=prod
+      - com.datadoghq.tags.version=abc123
+    ports:
+      - "8080:8080"
+    networks:
+      - network
+    depends_on:
+      - my-db-service
+
+  my-db-service:
+    container_name: my-db-service
+    image: mysql
+    restart: always
+    command: [ --performance-schema=ON, --max-digest-length=4096, --performance-schema-max-digest-length=4096, --performance-schema-max-sql-text-length=4096, --performance-schema-consumer-events-statements-current=ON, --performance-schema-consumer-events-waits-current=ON, --performance-schema-consumer-events-statements-history-long=ON, --performance-schema-consumer-events-statements-history=ON ]
+    environment:
+      - DD_SERVICE=my-db-service
+      - DD_ENV=prod
+      - DD_VERSION=abc123
+      - MYSQL_ROOT_PASSWORD=example
+      - MYSQL_DATABASE=recordings
+    labels:
+      - com.datadoghq.ad.check_names=["mysql"]
+      - com.datadoghq.ad.init_configs=[{}]
+      - com.datadoghq.ad.instances=[{"dbm":"true", "host":"%%host%%", "port":3306, "username":"datadog", "password":"UNIQUEPASSWORD"}]
+      - com.datadoghq.ad.logs=[{"source":"mysql", "service":"mysql"}]
+    volumes:
+      - ./data:/var/lib/mysql:rw
+      - ./create-tables.sql:/docker-entrypoint-initdb.d/create-tables.sql:ro
+      - ./setup-dbm.sql:/docker-entrypoint-initdb.d/setup-dbm.sql:ro
+    ports:
+      - "3306:3306"
+    networks:
+      - network
+
+  datadog-agent:
+    container_name: datadog-agent
+    image: gcr.io/datadoghq/agent:latest
+    ports:
+      - "8125:8125/udp"
+      - "8126:8126"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      # - /opt/datadog-agent/run:/opt/datadog-agent/run:rw
+      - /etc/passwd:/etc/passwd:ro
+    environment:
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_SITE=datadoghq.com
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+      - DD_LOGS_CONFIG_DOCKER_CONTAINER_USE_FILE=true
+      - DD_CONTAINER_EXCLUDE="name:datadog-agent"
+      - DD_APM_ENABLED=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+      - DD_PROCESS_AGENT_ENABLED=true
+    networks:
+      - network
+
+networks:
+  network:
