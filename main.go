@@ -6,6 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	sqltrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/database/sql"
+	gintrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gin-gonic/gin"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 
@@ -33,6 +35,7 @@ func main() {
 		tracer.WithService("test-go"),
 		tracer.WithServiceVersion("abc123"),
 	)
+	defer tracer.Stop()
 
 	err := profiler.Start(
 		profiler.WithService("test-go"),
@@ -53,6 +56,7 @@ func main() {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
+	defer profiler.Stop()
 
 	// Capture connection properties.
 	cfg := mysql.Config{
@@ -62,9 +66,11 @@ func main() {
 		Addr:   os.Getenv("DBADDR"),
 		DBName: "recordings",
 	}
+	// Register the driver that we will be using (in this case mysql) under a custom service name.
+	sqltrace.Register("mysql", &mysql.MySQLDriver{}, sqltrace.WithServiceName("test-go"))
 	// Get a database handle.
 	var openErr error
-	db, openErr = sql.Open("mysql", cfg.FormatDSN())
+	db, openErr = sqltrace.Open("mysql", cfg.FormatDSN())
 	if openErr != nil {
 		logger.Error(openErr.Error())
 		os.Exit(1)
@@ -78,13 +84,11 @@ func main() {
 	logger.Info("Connected!")
 
 	router := gin.Default()
+	router.Use(gintrace.Middleware("test-go"))
 	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbums)
 
 	router.Run()
-
-	defer tracer.Stop()
-	defer profiler.Stop()
 }
 
 // postAlbums adds the specified album to the database,

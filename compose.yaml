@@ -28,7 +28,7 @@ services:
 
   my-db-service:
     container_name: my-db-service
-    image: mysql
+    image: mysql:8.0
     restart: always
     command: [ --performance-schema=ON, --max-digest-length=4096, --performance-schema-max-digest-length=4096, --performance-schema-max-sql-text-length=4096, --performance-schema-consumer-events-statements-current=ON, --performance-schema-consumer-events-waits-current=ON, --performance-schema-consumer-events-statements-history-long=ON, --performance-schema-consumer-events-statements-history=ON ]
     environment:
