@@ -12,6 +12,7 @@ services:
       - DD_SERVICE=test-go
       - DD_ENV=prod
       - DD_VERSION=abc123
+      - DD_AGENT_HOST="datadog-agent"
       - DBUSER=root
       - DBPASS=example
       - DBADDR=my-db-service:3306
@@ -44,8 +45,7 @@ services:
       - com.datadoghq.ad.logs=[{"source":"mysql", "service":"mysql"}]
     volumes:
       - ./data:/var/lib/mysql:rw
-      - ./create-tables.sql:/docker-entrypoint-initdb.d/create-tables.sql:ro
-      - ./setup-dbm.sql:/docker-entrypoint-initdb.d/setup-dbm.sql:ro
+      - ./sql/setup-dbm.sql:/docker-entrypoint-initdb.d/setup-dbm.sql:ro
     ports:
       - "3306:3306"
     networks:
@@ -62,7 +62,6 @@ services:
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      # - /opt/datadog-agent/run:/opt/datadog-agent/run:rw
       - /etc/passwd:/etc/passwd:ro
     environment:
       - DD_API_KEY=${DD_API_KEY}

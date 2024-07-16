@@ -30,23 +30,26 @@ var logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 var db *sql.DB
 
 func main() {
+	env := os.Getenv("DD_ENV")
+	service := os.Getenv("DD_SERVICE")
+	version := os.Getenv("DD_VERSION")
+
 	tracer.Start(
-		tracer.WithEnv("prod"),
-		tracer.WithService("test-go"),
-		tracer.WithServiceVersion("abc123"),
+		tracer.WithEnv(env),
+		tracer.WithService(service),
+		tracer.WithServiceVersion(version),
 	)
 	defer tracer.Stop()
 
 	err := profiler.Start(
-		profiler.WithService("test-go"),
-		profiler.WithEnv("prod"),
-		profiler.WithVersion("abc123"),
+		profiler.WithService(service),
+		profiler.WithEnv(env),
+		profiler.WithVersion(version),
 		profiler.WithProfileTypes(
 			profiler.CPUProfile,
 			profiler.HeapProfile,
 			// The profiles below are disabled by default to keep overhead
 			// low, but can be enabled as needed.
-
 			profiler.BlockProfile,
 			profiler.MutexProfile,
 			profiler.GoroutineProfile,
@@ -58,6 +61,14 @@ func main() {
 	}
 	defer profiler.Stop()
 
+	connectToDatabase(service)
+	createAlbumTable()
+
+	router := initializeRouter(service)
+	router.Run()
+}
+
+func connectToDatabase(service string) {
 	// Capture connection properties.
 	cfg := mysql.Config{
 		User:   os.Getenv("DBUSER"),
@@ -67,12 +78,12 @@ func main() {
 		DBName: "recordings",
 	}
 	// Register the driver that we will be using (in this case mysql) under a custom service name.
-	sqltrace.Register("mysql", &mysql.MySQLDriver{}, sqltrace.WithServiceName("test-go"))
+	sqltrace.Register("mysql", &mysql.MySQLDriver{}, sqltrace.WithServiceName(service))
 	// Get a database handle.
-	var openErr error
-	db, openErr = sqltrace.Open("mysql", cfg.FormatDSN())
-	if openErr != nil {
-		logger.Error(openErr.Error())
+	var err error
+	db, err = sqltrace.Open("mysql", cfg.FormatDSN())
+	if err != nil {
+		logger.Error(err.Error())
 		os.Exit(1)
 	}
 
@@ -82,13 +93,30 @@ func main() {
 		os.Exit(1)
 	}
 	logger.Info("Connected!")
+}
 
+func createAlbumTable() {
+	createTableSQL := `CREATE TABLE IF NOT EXISTS album (
+		id         INT AUTO_INCREMENT NOT NULL,
+		title      VARCHAR(128) NOT NULL,
+		artist     VARCHAR(255) NOT NULL,
+		price      DECIMAL(5,2) NOT NULL,
+		PRIMARY KEY (id)
+	);`
+
+	_, err := db.Exec(createTableSQL)
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+}
+
+func initializeRouter(service string) *gin.Engine {
 	router := gin.Default()
-	router.Use(gintrace.Middleware("test-go"))
+	router.Use(gintrace.Middleware(service))
 	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbums)
-
-	router.Run()
+	return router
 }
 
 // postAlbums adds the specified album to the database,
