@@ -8,9 +8,9 @@ resource "aws_ecr_repository" "repository" {
   }
 }
 
-data "aws_iam_policy_document" "ecr" {
+data "aws_iam_policy_document" "policy_document" {
   statement {
-    sid    = "ECRAccess"
+    sid    = "ECSTaskAccess"
     effect = "Allow"
 
     principals {
@@ -39,5 +39,5 @@ data "aws_iam_policy_document" "ecr" {
 
 resource "aws_ecr_repository_policy" "repository_policy" {
   repository = aws_ecr_repository.repository.name
-  policy     = data.aws_iam_policy_document.ecr.json
+  policy     = data.aws_iam_policy_document.policy_document.json
 }
