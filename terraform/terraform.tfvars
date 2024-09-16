@@ -1,0 +1,8 @@
+region            = "ap-northeast-1"
+env               = "shuhei"
+service           = "test-go"
+ver               = "latest"
+global_ip_address = "58.93.220.180/32"
+team              = "cake"
+creator           = "shuhei_ogura"
+dd_api_key        = ""

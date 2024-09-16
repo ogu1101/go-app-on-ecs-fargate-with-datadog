@@ -71,11 +71,12 @@ func main() {
 func connectToDatabase(service string) {
 	// Capture connection properties.
 	cfg := mysql.Config{
-		User:   os.Getenv("DBUSER"),
-		Passwd: os.Getenv("DBPASS"),
-		Net:    "tcp",
-		Addr:   os.Getenv("DBADDR"),
-		DBName: "recordings",
+		User:                 os.Getenv("DBUSER"),
+		Passwd:               os.Getenv("DBPASS"),
+		Net:                  "tcp",
+		Addr:                 os.Getenv("DBADDR"),
+		DBName:               "recordings",
+		AllowNativePasswords: true,
 	}
 	// Register the driver that we will be using (in this case mysql) under a custom service name.
 	sqltrace.Register("mysql", &mysql.MySQLDriver{}, sqltrace.WithServiceName(service))
@@ -114,9 +115,39 @@ func createAlbumTable() {
 func initializeRouter(service string) *gin.Engine {
 	router := gin.Default()
 	router.Use(gintrace.Middleware(service))
+	router.GET("/", healthCheck)
 	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbums)
 	return router
+}
+
+func healthCheck(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, "")
+}
+
+// getAlbumByID queries for the album with the specified ID.
+// parameter sent by the client, then returns that album as a response.
+func getAlbumByID(c *gin.Context) {
+	logger.Info("getAlbumByID started!")
+
+	id := c.Param("id")
+
+	// An album to hold data from the returned row.
+	var alb album
+
+	row := db.QueryRow("SELECT * FROM album WHERE id = ?", id)
+	if err := row.Scan(&alb.ID, &alb.Title, &alb.Artist, &alb.Price); err != nil {
+		if err == sql.ErrNoRows {
+			c.IndentedJSON(http.StatusNotFound, "")
+			return
+		}
+		logger.Error(fmt.Errorf("getAlbumByID %s: %v", id, err).Error())
+		c.IndentedJSON(http.StatusInternalServerError, "")
+		return
+	}
+	c.IndentedJSON(http.StatusOK, alb)
+	logger.Info("Returned response!", "alb", alb)
+	logger.Info("getAlbumByID was completed!")
 }
 
 // postAlbums adds the specified album to the database,
@@ -149,29 +180,4 @@ func postAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, gin.H{"id": id})
 	logger.Info("Returned response!", "id", id)
 	logger.Info("postAlbums was completed!")
-}
-
-// getAlbumByID queries for the album with the specified ID.
-// parameter sent by the client, then returns that album as a response.
-func getAlbumByID(c *gin.Context) {
-	logger.Info("getAlbumByID started!")
-
-	id := c.Param("id")
-
-	// An album to hold data from the returned row.
-	var alb album
-
-	row := db.QueryRow("SELECT * FROM album WHERE id = ?", id)
-	if err := row.Scan(&alb.ID, &alb.Title, &alb.Artist, &alb.Price); err != nil {
-		if err == sql.ErrNoRows {
-			c.IndentedJSON(http.StatusNotFound, "")
-			return
-		}
-		logger.Error(fmt.Errorf("getAlbumByID %s: %v", id, err).Error())
-		c.IndentedJSON(http.StatusInternalServerError, "")
-		return
-	}
-	c.IndentedJSON(http.StatusOK, alb)
-	logger.Info("Returned response!", "alb", alb)
-	logger.Info("getAlbumByID was completed!")
 }
