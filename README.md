@@ -14,7 +14,7 @@
 
 - AWS リソース名の重複を避けるため、任意の値を `env` に設定してください。
 - セキュリティグループ作成画面の`送信先`に`マイ IP` を選択すると、グローバル IP アドレスが表示されます。それを `global_ip_address` に設定してください。
-- `dd_api_key` に Datadog の API キーを設定してください。
+- Datadog の API キーを `dd_api_key` に設定してください。
 
 ## AWS 認証情報の設定
 
@@ -29,7 +29,7 @@
 ## コマンド実行
 
 - 以下コマンドの ${ENV} を `env` の値に置き換えてください。
-- 一回目の `terraform apply` コマンド実行時に、AWS アカウント ID (aws_account_id) が出力されます。以下コマンドの ${AWS_ACCOUNT_ID} をその AWS アカウント IDに置き換えてください。
+- 一回目の `terraform apply` コマンド実行時に、AWS アカウント ID ( aws_account_id ) が出力されます。それを以下コマンドの ${AWS_ACCOUNT_ID} に置き換えてください。
 
 ```bash
 cd terraform
@@ -59,7 +59,7 @@ terraform apply
 
 # 動作確認
 
-- 二回目の `terraform apply` コマンド実行時に、ALB の DNS 名 (alb_dns_name) が出力されます。それを以下コマンドの ${ALB_DNS_NAME} に設定してください。
+- 二回目の `terraform apply` コマンド実行時に、ALB の DNS 名 ( alb_dns_name ) が出力されます。それを以下コマンドの ${ALB_DNS_NAME} に設定してください。
 
 ```bash
 curl http://${ALB_DNS_NAME}:8080/albums \
