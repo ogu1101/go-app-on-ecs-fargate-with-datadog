@@ -19,7 +19,7 @@
 ## AWS 認証情報の設定
 
 - `AWS access portal` 画面で`アクセスキー`リンクをクリックし、`export` コマンドをコピーしてください。
-- ターミナルでその `export` コマンドを実行してください。
+- ターミナルなどでその `export` コマンドを実行してください。
 - または、以下ドキュメントのいずれかを参考に、AWS 認証情報を設定してください。
   - [Configure the AWS CLI with IAM Identity Center authentication](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html#sso-configure-profile-token-auto-sso)
   - [Environment variables to configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html?icmpid=docs_sso_user_portal)
@@ -28,7 +28,7 @@
 
 ## コマンド実行
 
-- 以下コマンドの ${ENV} を `env` の値に置き換えてください。
+- 以下コマンドの `${ENV}` を `env` の値に置き換えてください。
 - 一回目の `terraform apply` コマンド実行時に、AWS アカウント ID ( `aws_account_id` ) が出力されます。以下コマンドの `${AWS_ACCOUNT_ID}` をその AWS アカウント ID に置き換えてください。
 
 ```bash
