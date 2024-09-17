@@ -29,7 +29,7 @@
 ## コマンド実行
 
 - 以下コマンドの ${ENV} を `env` の値に置き換えてください。
-- 一回目の `terraform apply` コマンド実行時に、AWS アカウント ID ( aws_account_id ) が出力されます。それを以下コマンドの ${AWS_ACCOUNT_ID} に置き換えてください。
+- 一回目の `terraform apply` コマンド実行時に、AWS アカウント ID ( aws_account_id ) が出力されます。以下コマンドの ${AWS_ACCOUNT_ID} をその AWS アカウント ID に置き換えてください。
 
 ```bash
 cd terraform
@@ -59,7 +59,7 @@ terraform apply
 
 # 動作確認
 
-- 二回目の `terraform apply` コマンド実行時に、ALB の DNS 名 ( alb_dns_name ) が出力されます。それを以下コマンドの ${ALB_DNS_NAME} に設定してください。
+- 二回目の `terraform apply` コマンド実行時に、ALB の DNS 名 ( alb_dns_name ) が出力されます。以下コマンドの ${ALB_DNS_NAME} をその DNS 名に置き換えてください。
 
 ```bash
 curl http://${ALB_DNS_NAME}:8080/albums \
