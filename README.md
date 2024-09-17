@@ -42,7 +42,7 @@ aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS
 
 cd ..
 
-docker buildx build . \
+docker build . \
     -t ${ENV}-ecr-repository \
     --platform linux/arm64 \
     --build-arg DD_GIT_REPOSITORY_URL=github.com/ogu1101/example-go-app-with-datadog \
