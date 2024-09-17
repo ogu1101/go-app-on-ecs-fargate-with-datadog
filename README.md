@@ -57,7 +57,7 @@ cd terraform
 terraform apply
 ```
 
-# 動作確認
+## 動作確認
 
 - 二回目の `terraform apply` コマンド実行時に、ALB の DNS 名 ( alb_dns_name ) が出力されます。以下コマンドの ${ALB_DNS_NAME} をその DNS 名に置き換えてください。
 
