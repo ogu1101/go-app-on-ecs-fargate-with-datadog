@@ -13,12 +13,12 @@
 ## `terraform/terraform.tfvars`　ファイルの修正
 
 - AWS リソース名の重複を避けるため、任意の値を `env` に設定してください。
-- セキュリティグループ作成画面の`送信先`に`マイ IP` を選択すると、グローバル IP アドレスが表示されます。それを `global_ip_address` に設定してください。
+- セキュリティグループ作成画面の「送信先」に「マイ IP 」を選択すると、グローバル IP アドレスが表示されます。それを `global_ip_address` に設定してください。
 - Datadog の API キーを `dd_api_key` に設定してください。
 
 ## AWS 認証情報の設定
 
-- `AWS access portal` 画面で`アクセスキー`リンクをクリックし、`export` コマンドをコピーしてください。
+- AWS access portal 画面で「アクセスキー」リンクをクリックし、`export` コマンドをコピーしてください。
 - ターミナルなどでその `export` コマンドを実行してください。
 - または、以下ドキュメントのいずれかを参考に、AWS 認証情報を設定してください。
   - [Configure the AWS CLI with IAM Identity Center authentication](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html#sso-configure-profile-token-auto-sso)
