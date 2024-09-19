@@ -2,6 +2,8 @@
 
 このリポジトリをクローンし、後述の `terraform apply` コマンドなどを実行すると、以下アーキテクチャ図の AWS リソースが作成され、Go アプリケーションコンテナ ( REST API ) および Datadog Agent コンテナが ECS Fargate にデプロイされます。
 
+![doc/architecture.drawio.png](doc/architecture.drawio.png)
+
 # 前提条件
 
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) をインストール済みであること。
