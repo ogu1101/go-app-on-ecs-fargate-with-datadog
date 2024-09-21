@@ -32,19 +32,16 @@
 
 - 以下コマンドの `${ENV}` を `env` の値に置き換えてください。
 - 一回目の `terraform apply` コマンド実行時に、AWS アカウント ID ( `aws_account_id` ) が出力されます。以下コマンドの `${AWS_ACCOUNT_ID}` をその AWS アカウント ID に置き換えてください。
+- `terraform` ディレクトリで以下のコマンドを実行してください。
 
 ```bash
-cd terraform
-
 terraform init
 
 terraform apply -target=aws_ecr_repository.repository
 
 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com
 
-cd ..
-
-docker build . \
+docker build .. \
     -t ${ENV}-ecr-repository \
     --platform linux/arm64 \
     --build-arg DD_GIT_REPOSITORY_URL=github.com/ogu1101/example-go-app-with-datadog \
@@ -53,8 +50,6 @@ docker build . \
 docker tag ${ENV}-ecr-repository:latest ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-repository:latest
 
 docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-repository:latest
-
-cd terraform
 
 terraform apply
 ```
@@ -77,8 +72,8 @@ curl http://${ALB_DNS_NAME}:8080/albums/1
 
 - [Tutorial: Accessing a relational database](https://go.dev/doc/tutorial/database-access)
 - [Tutorial: Developing a RESTful API with Go and Gin](https://go.dev/doc/tutorial/web-service-gin)
-- [golang - Official Image](https://hub.docker.com/_/golang)
 - [Build your Go image](https://docs.docker.com/guides/language/golang/build-images/)
+- [golang - Official Image](https://hub.docker.com/_/golang)
 - [mysql - Official Image](https://hub.docker.com/_/mysql)
 - [Setting Up Database Monitoring for self hosted MySQL](https://docs.datadoghq.com/database_monitoring/setup_mysql/selfhosted/?tab=mysql56)
 - [AWS CloudFormation を使用した Amazon ECS リソースの作成](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/creating-resources-with-cloudformation.html)
