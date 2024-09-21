@@ -78,4 +78,4 @@ curl http://${ALB_DNS_NAME}:8080/albums/1
 - [Setting Up Database Monitoring for self hosted MySQL](https://docs.datadoghq.com/database_monitoring/setup_mysql/selfhosted/?tab=mysql56)
 - [AWS CloudFormation を使用した Amazon ECS リソースの作成](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/creating-resources-with-cloudformation.html)
 - [Private registry authentication in Amazon ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry_auth.html)
-- [Terraform の AWS リソース別ページ](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+- [AWS リソース別の Terraform 公式ページ](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
