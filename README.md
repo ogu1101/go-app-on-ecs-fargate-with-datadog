@@ -42,12 +42,10 @@ terraform apply -target=aws_ecr_repository.repository
 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com
 
 docker build .. \
-    -t ${ENV}-ecr-repository \
+    -t ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-repository \
     --platform linux/arm64 \
     --build-arg DD_GIT_REPOSITORY_URL=github.com/ogu1101/example-go-app-with-datadog \
     --build-arg DD_GIT_COMMIT_SHA=$(git rev-parse HEAD)
-
-docker tag ${ENV}-ecr-repository:latest ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-repository:latest
 
 docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-repository:latest
 
