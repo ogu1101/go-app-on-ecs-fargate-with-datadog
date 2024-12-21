@@ -44,7 +44,7 @@ aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS
 docker build .. \
     -t ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-repository \
     --platform linux/arm64 \
-    --build-arg DD_GIT_REPOSITORY_URL=github.com/ogu1101/example-go-app-with-datadog \
+    --build-arg DD_GIT_REPOSITORY_URL=github.com/ogu1101/go-app-on-ecs-fargate-with-datadog \
     --build-arg DD_GIT_COMMIT_SHA=$(git rev-parse HEAD)
 
 docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-repository:latest
