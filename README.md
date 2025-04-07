@@ -15,7 +15,7 @@
 ## `terraform/terraform.tfvars`　ファイルの修正
 
 - AWS リソース名の重複を避けるため、任意の値を `env` に設定してください。
-- セキュリティグループ作成画面の「送信先」に「マイ IP 」を選択すると、グローバル IP アドレスが表示されます。それを `global_ip_address` に設定してください。
+- こちらの[サイト](https://www.cman.jp/network/support/go_access.cgi)でグローバル IP アドレスを確認し、`global_ip_address` に設定してください。
 - Datadog の API キーを `dd_api_key` に設定してください。
 
 ## AWS 認証情報の設定
