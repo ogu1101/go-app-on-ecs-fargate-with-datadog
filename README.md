@@ -29,7 +29,7 @@
 ## コマンド実行
 
 - 以下コマンドの `${ENV}` を `env` の値に置き換えてください。
-- 一回目の `terraform apply` コマンド実行時に、AWS アカウント ID ( `aws_account_id` ) が出力されます。以下コマンドの `${AWS_ACCOUNT_ID}` をその AWS アカウント ID に置き換えてください。
+- 以下コマンドの `${AWS_ACCOUNT_ID}` をご利用の AWS アカウント ID に置き換えてください。
 - `terraform` ディレクトリで以下のコマンドを実行してください。
 
 ```bash
