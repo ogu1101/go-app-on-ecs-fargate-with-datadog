@@ -15,7 +15,7 @@ resource "aws_iam_role" "ecs_task_execution_role" {
 }
 
 resource "aws_iam_policy" "create_log_group_policy" {
-  name        = "${var.env}CreateLogGroupPolicy"
+  name = "${var.env}CreateLogGroupPolicy"
 
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.
