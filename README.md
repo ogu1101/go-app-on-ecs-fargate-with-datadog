@@ -29,7 +29,7 @@
 ## コマンド実行
 
 - 以下コマンドの `${ENV}` を `env` の値に置き換えてください。
-- 以下コマンドの `${AWS_ACCOUNT_ID}` をご利用の AWS アカウント ID に置き換えてください。
+- 以下コマンドの `${AWS_ACCOUNT_ID}` をご自分の AWS アカウント ID に置き換えてください。
 - `terraform` ディレクトリで以下のコマンドを実行してください。
 
 ```bash
@@ -39,11 +39,7 @@ terraform apply -target=aws_ecr_repository.repository
 
 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com
 
-docker build .. \
-    -t ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-repository \
-    --platform linux/arm64 \
-    --build-arg DD_GIT_REPOSITORY_URL=github.com/ogu1101/go-app-on-ecs-fargate-with-datadog \
-    --build-arg DD_GIT_COMMIT_SHA=$(git rev-parse HEAD)
+docker build .. -t ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-repository --platform linux/arm64 --build-arg DD_GIT_REPOSITORY_URL=github.com/ogu1101/go-app-on-ecs-fargate-with-datadog --build-arg DD_GIT_COMMIT_SHA=$(git rev-parse HEAD)
 
 docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-repository:latest
 
@@ -55,11 +51,7 @@ terraform apply
 - 二回目の `terraform apply` コマンド実行時に、ALB の DNS 名 ( `alb_dns_name` ) が出力されます。以下コマンドの `${ALB_DNS_NAME}` をその DNS 名に置き換えてください。
 
 ```bash
-curl http://${ALB_DNS_NAME}:8080/albums \
-    --include \
-    --header "Content-Type: application/json" \
-    --request "POST" \
-    --data '{"title": "The Modern Sound of Betty Carter","artist": "Betty Carter","price": 49.99}'
+curl http://${ALB_DNS_NAME}:8080/albums --include --header "Content-Type: application/json" --request "POST" --data '{"title": "The Modern Sound of Betty Carter","artist": "Betty Carter","price": 49.99}'
 
 curl http://${ALB_DNS_NAME}:8080/albums/1
 ```

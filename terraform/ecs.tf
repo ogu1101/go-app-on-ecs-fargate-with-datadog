@@ -63,7 +63,7 @@ resource "aws_ecs_task_definition" "task_definition" {
       ]
     }
   ])
-  execution_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ecsTaskExecutionRole"
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
   runtime_platform {
     operating_system_family = "LINUX"
