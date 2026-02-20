@@ -3,7 +3,7 @@ resource "aws_rds_cluster" "cluster" {
   availability_zones     = ["${var.region}a", "${var.region}c", "${var.region}d"]
   engine                 = "aurora-mysql"
   engine_mode            = "provisioned"
-  engine_version         = "8.0.mysql_aurora.3.07.0"
+  engine_version         = "8.0.mysql_aurora.3.08.2"
   database_name          = "recordings"
   master_username        = "root"
   master_password        = "example-password"
