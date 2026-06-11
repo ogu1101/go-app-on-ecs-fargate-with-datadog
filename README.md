@@ -1,36 +1,55 @@
-# 概要
+# go-app-on-ecs-fargate-with-datadog
 
-このリポジトリをクローンし、後述の `terraform apply` コマンドなどを実行すると、以下アーキテクチャ図の AWS リソースが作成され、Go アプリケーションコンテナ ( REST API ) および Datadog Agent コンテナが ECS Fargate にデプロイされます。
+![Architecture](doc/architecture.drawio.png)
 
-![doc/architecture.drawio.png](doc/architecture.drawio.png)
+## Overview
 
-# 前提条件
+Cloning this repository and running the `terraform apply` commands described below will provision the AWS resources shown in the architecture diagram above, then deploy a Go application container (REST API) and a Datadog Agent container to ECS Fargate.
 
-- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) をインストール済みであること。
-- [Terraform](https://developer.hashicorp.com/terraform/install) をインストール済みであること。
-- [Docker](https://docs.docker.com/engine/install/) をインストール済みであること。
+---
 
-# ビルド方法
+## Table of Contents
 
-## `terraform/terraform.tfvars`　ファイルの修正
+- [Prerequisites](#prerequisites)
+- [Build & Deployment](#build--deployment)
+  - [1. Edit terraform.tfvars](#1-edit-terraformtfvars)
+  - [2. Configure AWS Credentials](#2-configure-aws-credentials)
+  - [3. Run Commands](#3-run-commands)
+  - [4. Verify the Deployment](#4-verify-the-deployment)
+- [References](#references)
 
-- AWS リソース名の重複を避けるため、任意の値を `env` に設定してください。
-- こちらの[サイト](https://www.cman.jp/network/support/go_access.cgi)でグローバル IP アドレスを確認し、`global_ip_address` に設定してください。
-- Datadog の API キーを `dd_api_key` に設定してください。
+---
 
-## AWS 認証情報の設定
+## Prerequisites
 
-- 以下ドキュメントのいずれかを参考に、AWS 認証情報を設定してください。
-  - [Configure the AWS CLI with IAM Identity Center authentication](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html#sso-configure-profile-token-auto-sso)
-  - [Environment variables to configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html?icmpid=docs_sso_user_portal)
-  - [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
-  - [Authenticate with short-term credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-authentication-short-term.html)
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) must be installed.
+- [Terraform](https://developer.hashicorp.com/terraform/install) must be installed.
+- [Docker](https://docs.docker.com/engine/install/) must be installed.
 
-## コマンド実行
+---
 
-- 以下コマンドの `${ENV}` を `env` の値に置き換えてください。
-- 以下コマンドの `${AWS_ACCOUNT_ID}` をご自分の AWS アカウント ID に置き換えてください。
-- `terraform` ディレクトリで以下のコマンドを実行してください。
+## Build & Deployment
+
+### 1. Edit `terraform/terraform.tfvars`
+
+- Set an arbitrary value for `env` to avoid naming conflicts with existing AWS resources.
+- Look up your global IP address using [this site](https://www.cman.jp/network/support/go_access.cgi) and set it as `global_ip_address`.
+- Set your Datadog API key as `dd_api_key`.
+
+### 2. Configure AWS Credentials
+
+Configure your AWS credentials using one of the following methods:
+
+- [Configure the AWS CLI with IAM Identity Center authentication](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html#sso-configure-profile-token-auto-sso)
+- [Environment variables to configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html?icmpid=docs_sso_user_portal)
+- [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
+- [Authenticate with short-term credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-authentication-short-term.html)
+
+### 3. Run Commands
+
+- Replace `${ENV}` in the commands below with the value you set for `env`.
+- Replace `${AWS_ACCOUNT_ID}` with your AWS account ID.
+- Run the following commands from the `terraform` directory.
 
 ```bash
 terraform init
@@ -46,9 +65,9 @@ docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${ENV}-ecr-re
 terraform apply
 ```
 
-## 動作確認
+### 4. Verify the Deployment
 
-- 二回目の `terraform apply` コマンド実行時に、ALB の DNS 名 ( `alb_dns_name` ) が出力されます。以下コマンドの `${ALB_DNS_NAME}` をその DNS 名に置き換えてください。
+The ALB DNS name (`alb_dns_name`) is printed as output when the second `terraform apply` completes. Replace `${ALB_DNS_NAME}` in the commands below with that DNS name.
 
 ```bash
 curl http://${ALB_DNS_NAME}:8080/albums --include --header "Content-Type: application/json" --request "POST" --data '{"title": "The Modern Sound of Betty Carter","artist": "Betty Carter","price": 49.99}'
@@ -56,7 +75,9 @@ curl http://${ALB_DNS_NAME}:8080/albums --include --header "Content-Type: applic
 curl http://${ALB_DNS_NAME}:8080/albums/1
 ```
 
-# References
+---
+
+## References
 
 - [Tutorial: Accessing a relational database](https://go.dev/doc/tutorial/database-access)
 - [Tutorial: Developing a RESTful API with Go and Gin](https://go.dev/doc/tutorial/web-service-gin)
@@ -64,6 +85,6 @@ curl http://${ALB_DNS_NAME}:8080/albums/1
 - [golang - Official Image](https://hub.docker.com/_/golang)
 - [mysql - Official Image](https://hub.docker.com/_/mysql)
 - [Setting Up Database Monitoring for self hosted MySQL](https://docs.datadoghq.com/database_monitoring/setup_mysql/selfhosted/?tab=mysql56)
-- [AWS CloudFormation を使用した Amazon ECS リソースの作成](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/creating-resources-with-cloudformation.html)
+- [Creating Amazon ECS resources using AWS CloudFormation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/creating-resources-with-cloudformation.html)
 - [Private registry authentication in Amazon ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry_auth.html)
-- [AWS リソース別の Terraform 公式ページ](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+- [Terraform AWS Provider Documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
