@@ -14,8 +14,8 @@ provider "aws" {
   default_tags {
     tags = {
       environment = var.env
-      team        = var.team
-      creator     = var.creator
+      ts_team        = var.team
+      ts_creator     = var.creator
     }
   }
 }
